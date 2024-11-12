@@ -33,6 +33,10 @@ class Bird:
         self.velocity = 0
         self.rect = pygame.Rect(self.x, self.y, 30, 30)
 
+        # bird sticker
+        bird_image = pygame.image.load("flappybird.png").convert_alpha()
+        self.bird_image = pygame.transform.scale(bird_image, (40, 30))
+
     def flap(self):
         self.velocity = FLAP_STRENGTH
 
@@ -41,8 +45,10 @@ class Bird:
         self.y += self.velocity
         self.rect.y = self.y
 
-    def draw(self):
-        pygame.draw.rect(screen, BLUE, (self.x, self.y, 30, 30))
+    def draw(self, screen):
+        # pygame.draw.rect(screen, BLACK, (self.x, self.y, 30, 30))
+
+        screen.blit(self.bird_image, (self.x, self.y))
 
 
 class Pipe:
@@ -60,6 +66,16 @@ class Pipe:
             self.width,
             WINDOW_HEIGHT - (self.gap_y + PIPE_GAP // 2),
         )
+
+        # create pipe sticker
+        pipe_image = pygame.image.load("pipe.png").convert_alpha()
+        self.topPipe_image = pygame.transform.scale(
+            pipe_image, (self.width, self.top_pipe.height)
+        )
+        self.bottonPipe_image = pygame.transform.scale(
+            pipe_image, (self.width, self.bottom_pipe.height)
+        )
+        self.topPipe_image = pygame.transform.flip(self.topPipe_image, 0, 1)
 
     def update(self):
         self.x -= PIPE_SPEED
