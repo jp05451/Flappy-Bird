@@ -77,23 +77,36 @@ class Pipe:
         self.top_pipe.x = self.x
         self.bottom_pipe.x = self.x
 
-    def draw(self):
-        pygame.draw.rect(screen, GREEN, self.top_pipe)
-        pygame.draw.rect(screen, GREEN, self.bottom_pipe)
+    def draw(self, screen):
+        screen.blit(self.bottonPipe_image, (self.bottom_pipe.x, self.bottom_pipe.y))
+        screen.blit(self.topPipe_image, (self.top_pipe.x, self.top_pipe.y))
+        # pygame.draw.rect(screen, GREEN, self.top_pipe)
 
 
-def main():
-    bird = Bird()
-    pipes = []
-    score = 0
-    font = pygame.font.Font(None, 36)
-    last_pipe = pygame.time.get_ticks()
-    game_over = False
+class Game:
+    def __init__(self):
+        self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+        pygame.display.set_caption("Flappy Bird")
+        self.clock = pygame.time.Clock()
+        self.font = pygame.font.Font(None, 36)
+        self.reset()
+        self.bestScore = self.loadBestScore()
 
-    while True:
-        current_time = pygame.time.get_ticks()
+    def loadBestScore(self):
+        try:
+            with open("best.txt", "r") as f:
+                return int(f.read())
+        except:
+            return 0
 
-        # Handle events
+    def reset(self):
+        self.bird = Bird()
+        self.pipes = []
+        self.score = 0
+        self.last_pipe = pygame.time.get_ticks()
+        self.game_over = False
+
+    def handle_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
