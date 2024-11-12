@@ -20,11 +20,6 @@ BLACK = (0, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
-# Create the game window
-screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-pygame.display.set_caption("Flappy Bird")
-clock = pygame.time.Clock()
-
 
 class Bird:
     def __init__(self):
@@ -105,70 +100,70 @@ def main():
                 sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    if game_over:
-                        # Reset game
-                        bird = Bird()
-                        pipes = []
-                        score = 0
-                        game_over = False
+                    if self.game_over:
+                        self.reset()
                     else:
-                        bird.flap()
+                        self.bird.flap()
 
-        if not game_over:
-            # Update bird
-            bird.update()
+    def update(self):
+        current_time = pygame.time.get_ticks()
+        if not self.game_over:
+            self.bird.update()
 
-            # Spawn new pipes
-            if current_time - last_pipe > PIPE_SPAWN_TIME:
-                pipes.append(Pipe())
-                last_pipe = current_time
+            if self.score > self.bestScore:
+                self.bestScore = self.score
 
-            # Update and check pipes
-            for pipe in pipes[:]:
+            if current_time - self.last_pipe > PIPE_SPAWN_TIME:
+                self.pipes.append(Pipe())
+                self.last_pipe = current_time
+
+            for pipe in self.pipes[:]:
                 pipe.update()
-
-                # Check collision
                 if (
-                    bird.rect.colliderect(pipe.top_pipe)
-                    or bird.rect.colliderect(pipe.bottom_pipe)
-                    or bird.y < 0
-                    or bird.y > WINDOW_HEIGHT
+                    self.bird.rect.colliderect(pipe.top_pipe)
+                    or self.bird.rect.colliderect(pipe.bottom_pipe)
+                    or self.bird.y < 0
+                    or self.bird.y > WINDOW_HEIGHT
                 ):
-                    game_over = True
+                    self.game_over = True
 
-                # Score points
-                if not pipe.scored and pipe.x < bird.x:
-                    score += 1
+                if not pipe.scored and pipe.x < self.bird.x:
+                    self.score += 1
                     pipe.scored = True
 
-                # Remove pipes that are off screen
                 if pipe.x < -pipe.width:
-                    pipes.remove(pipe)
+                    self.pipes.remove(pipe)
 
-        # Draw everything
-        screen.fill(WHITE)
+    def draw(self):
+        self.screen.fill(WHITE)
+        for pipe in self.pipes:
+            pipe.draw(self.screen)
+        self.bird.draw(self.screen)
 
-        for pipe in pipes:
-            pipe.draw()
+        score_text = self.font.render(f"Score: {self.score}", True, BLACK)
+        bestScore = self.font.render(f"Best Score: {self.bestScore}", True, BLACK)
+        self.screen.blit(score_text, (10, 10))
+        self.screen.blit(bestScore, (10, 30))
 
-        bird.draw()
-
-        # Draw score
-        score_text = font.render(f"Score: {score}", True, BLACK)
-        screen.blit(score_text, (10, 10))
-
-        if game_over:
-            game_over_text = font.render(
+        if self.game_over:
+            game_over_text = self.font.render(
                 "Game Over! Press SPACE to restart", True, BLACK
             )
             text_rect = game_over_text.get_rect(
                 center=(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2)
             )
-            screen.blit(game_over_text, text_rect)
+            self.screen.blit(game_over_text, text_rect)
 
         pygame.display.flip()
-        clock.tick(60)
+
+    def run(self):
+        while True:
+            self.handle_events()
+            self.update()
+            self.draw()
+            self.clock.tick(60)
 
 
 if __name__ == "__main__":
-    main()
+    game = Game()
+    game.run()
