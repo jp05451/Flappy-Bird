@@ -219,5 +219,5 @@ def argparser():
 
 if __name__ == "__main__":
     args=argparser()
-    game = Game()
+    game = Game(args.debug)
     game.run()
