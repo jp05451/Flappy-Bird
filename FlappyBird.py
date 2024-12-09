@@ -1,6 +1,7 @@
 import pygame
 import random
 import sys
+import argparse
 
 # Initialize Pygame
 pygame.init()
@@ -14,7 +15,8 @@ SPEED_INCREMENT = 0.5
 ORIGIN_SPEED = 3
 PIPE_SPEED = ORIGIN_SPEED
 PIPE_SPAWN_TIME = 1500  # milliseconds
-PIPE_GAP = 150
+ORIGIN_PIPE_GAP = 200
+PIPE_GAP = ORIGIN_PIPE_GAP
 
 # Colors
 WHITE = (255, 255, 255)
@@ -87,7 +89,7 @@ class Pipe:
 
 
 class Game:
-    def __init__(self):
+    def __init__(self,debug=False):
         self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
         self.background = pygame.image.load("flappybird_background.jpg").convert()
         self.background = pygame.transform.scale(
@@ -99,6 +101,7 @@ class Game:
         self.font = pygame.font.Font(None, 36)
         self.reset()
         self.bestScore = self.loadBestScore()
+        self.debug = debug
 
     def loadBestScore(self):
         try:
@@ -115,6 +118,8 @@ class Game:
         self.game_over = False
         global PIPE_SPEED
         PIPE_SPEED = ORIGIN_SPEED
+        global PIPE_GAP
+        PIPE_GAP = ORIGIN_PIPE_GAP
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -142,7 +147,13 @@ class Game:
 
             if self.score % 10 == 0 and self.score != 0:
                 global PIPE_SPEED
-                PIPE_SPEED = SPEED_INCREMENT * int(self.score / 10) + ORIGIN_SPEED
+                PIPE_SPEED = min(
+                    ORIGIN_SPEED + SPEED_INCREMENT * int(self.score / 10), 5
+                )
+            # print(PIPE_SPEED)
+                global PIPE_GAP
+                PIPE_GAP = max(ORIGIN_PIPE_GAP - int(self.score / 10) * 10, 130)
+                print(PIPE_GAP)
 
             for pipe in self.pipes[:]:
                 pipe.update()
@@ -167,10 +178,21 @@ class Game:
             pipe.draw(self.screen)
         self.bird.draw(self.screen)
 
-        score_text = self.font.render(f"Score: {self.score}", True, BLACK)
-        bestScore = self.font.render(f"Best Score: {self.bestScore}", True, BLACK)
-        self.screen.blit(score_text, (10, 10))
-        self.screen.blit(bestScore, (10, 30))
+        disaplyItem = {
+            "score": self.score,
+            "bestScore": self.bestScore,
+            "pipe gap": PIPE_GAP,
+            "pipe speed": PIPE_SPEED,
+        }
+        if(self.debug):
+            for item, value in disaplyItem.items():
+                text = self.font.render(f"{item}: {value}", True, BLACK)
+                self.screen.blit(text, (10, 10 + 20 * list(disaplyItem.keys()).index(item)))
+        else:
+            score_text = self.font.render(f"Score: {self.score}", True, BLACK)
+            bestScore = self.font.render(f"Best Score: {self.bestScore}", True, BLACK)
+            self.screen.blit(score_text, (10, 10))
+            self.screen.blit(bestScore, (10, 30))
 
         if self.game_over:
             game_over_text = self.font.render(
@@ -190,7 +212,12 @@ class Game:
             self.draw()
             self.clock.tick(60)
 
+def argparser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-d","--debug", action="store_true", help="Show debug info",default=False)
+    return parser.parse_args()
 
 if __name__ == "__main__":
+    args=argparser()
     game = Game()
     game.run()
