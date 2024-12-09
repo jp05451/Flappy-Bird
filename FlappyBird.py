@@ -10,7 +10,9 @@ WINDOW_WIDTH = 400
 WINDOW_HEIGHT = 600
 GRAVITY = 0.25
 FLAP_STRENGTH = -5
-PIPE_SPEED = 3
+SPEED_INCREMENT = 0.5
+ORIGIN_SPEED = 3
+PIPE_SPEED = ORIGIN_SPEED
 PIPE_SPAWN_TIME = 1500  # milliseconds
 PIPE_GAP = 150
 
@@ -52,6 +54,7 @@ class Pipe:
         self.x = WINDOW_WIDTH
         self.width = 50
         self.scored = False
+        self.pipeSpeed = PIPE_SPEED
 
         # Create rectangles for top and bottom pipes
         self.top_pipe = pygame.Rect(self.x, 0, self.width, self.gap_y - PIPE_GAP // 2)
@@ -73,7 +76,7 @@ class Pipe:
         self.topPipe_image = pygame.transform.flip(self.topPipe_image, 0, 1)
 
     def update(self):
-        self.x -= PIPE_SPEED
+        self.x -= self.pipeSpeed
         self.top_pipe.x = self.x
         self.bottom_pipe.x = self.x
 
@@ -86,6 +89,11 @@ class Pipe:
 class Game:
     def __init__(self):
         self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+        self.background = pygame.image.load("flappybird_background.jpg").convert()
+        self.background = pygame.transform.scale(
+            self.background, (WINDOW_WIDTH, WINDOW_HEIGHT)
+        )
+        self.screen.blit(self.background, (0, 0))
         pygame.display.set_caption("Flappy Bird")
         self.clock = pygame.time.Clock()
         self.font = pygame.font.Font(None, 36)
@@ -105,6 +113,8 @@ class Game:
         self.score = 0
         self.last_pipe = pygame.time.get_ticks()
         self.game_over = False
+        global PIPE_SPEED
+        PIPE_SPEED = ORIGIN_SPEED
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -129,6 +139,10 @@ class Game:
             if current_time - self.last_pipe > PIPE_SPAWN_TIME:
                 self.pipes.append(Pipe())
                 self.last_pipe = current_time
+
+            if self.score % 10 == 0 and self.score != 0:
+                global PIPE_SPEED
+                PIPE_SPEED = SPEED_INCREMENT * int(self.score / 10) + ORIGIN_SPEED
 
             for pipe in self.pipes[:]:
                 pipe.update()
