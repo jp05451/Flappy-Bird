@@ -22,6 +22,8 @@ Install the required dependencies:
 
 ```bash
 pipenv install
+or 
+pip install -r requirement.txt
 ```
 
 ## How to Play
@@ -29,10 +31,12 @@ pipenv install
 1. Run the game:
 
     ```bash
-    npm start
+    python3 flappyBird.py
+
     ```
 
-2. Use the spacebar or mouse click to make the bird fly.
+
+2. Use the spacebar to make the bird fly.
 3. Avoid the pipes and try to get the highest score possible.
 
 ## Contributing
