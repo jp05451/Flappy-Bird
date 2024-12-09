@@ -16,6 +16,7 @@ ORIGIN_SPEED = 3
 PIPE_SPEED = ORIGIN_SPEED
 PIPE_SPAWN_TIME = 1500  # milliseconds
 ORIGIN_PIPE_GAP = 200
+GAP_INCREMENT = 15
 PIPE_GAP = ORIGIN_PIPE_GAP
 
 # Colors
@@ -152,7 +153,7 @@ class Game:
                 )
             # print(PIPE_SPEED)
                 global PIPE_GAP
-                PIPE_GAP = max(ORIGIN_PIPE_GAP - int(self.score / 10) * 10, 130)
+                PIPE_GAP = max(ORIGIN_PIPE_GAP - GAP_INCREMENT* int(self.score / 10), 130)
                 print(PIPE_GAP)
 
             for pipe in self.pipes[:]:
