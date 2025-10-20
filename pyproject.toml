@@ -1,0 +1,12 @@
+[project]
+name = "flappy-bird"
+version = "0.1.0"
+description = "Flappy Bird game"
+requires-python = ">=3.9"
+dependencies = [
+    "pygame",
+]
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
