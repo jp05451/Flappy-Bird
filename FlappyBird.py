@@ -111,6 +111,13 @@ class Game:
         except:
             return 0
 
+    def saveBestScore(self):
+        try:
+            with open("best.txt", "w+") as f:
+                f.write(str(self.bestScore))
+        except Exception as e:
+            print(f"Failed to save best score: {e}")
+
     def reset(self):
         self.bird = Bird()
         self.pipes = []
@@ -163,6 +170,8 @@ class Game:
                     or self.bird.y < 0
                     or self.bird.y > WINDOW_HEIGHT
                 ):
+                    if not self.game_over and self.score >= self.bestScore:
+                        self.saveBestScore()
                     self.game_over = True
 
                 if not pipe.scored and pipe.x < self.bird.x:
@@ -171,9 +180,13 @@ class Game:
 
                 if pipe.x < -pipe.width:
                     self.pipes.remove(pipe)
+        else:
+            # 若遊戲結束後分數超過最佳分數，確保寫入
+            if self.score >= self.bestScore:
+                self.saveBestScore()
 
     def draw(self):
-        self.screen.fill(WHITE)
+        self.screen.blit(self.background, (0, 0))
         for pipe in self.pipes:
             pipe.draw(self.screen)
         self.bird.draw(self.screen)
