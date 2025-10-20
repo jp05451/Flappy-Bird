@@ -34,7 +34,7 @@ class Bird:
         self.rect = pygame.Rect(self.x, self.y, 30, 30)
 
         # bird sticker
-        bird_image = pygame.image.load("flappybird.png").convert_alpha()
+        bird_image = pygame.image.load("img/flappybird.png").convert_alpha()
         self.bird_image = pygame.transform.scale(bird_image, (40, 30))
 
     def flap(self):
@@ -69,7 +69,7 @@ class Pipe:
         )
 
         # create pipe sticker
-        pipe_image = pygame.image.load("pipe.png").convert_alpha()
+        pipe_image = pygame.image.load("img/pipe.png").convert_alpha()
         self.topPipe_image = pygame.transform.scale(
             pipe_image, (self.width, self.top_pipe.height)
         )
@@ -92,7 +92,7 @@ class Pipe:
 class Game:
     def __init__(self,debug=False):
         self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-        self.background = pygame.image.load("flappybird_background.jpg").convert()
+        self.background = pygame.image.load("img/flappybird_background.jpg").convert()
         self.background = pygame.transform.scale(
             self.background, (WINDOW_WIDTH, WINDOW_HEIGHT)
         )
@@ -151,7 +151,6 @@ class Game:
                 PIPE_SPEED = min(
                     ORIGIN_SPEED + SPEED_INCREMENT * int(self.score / 10), 5
                 )
-            # print(PIPE_SPEED)
                 global PIPE_GAP
                 PIPE_GAP = max(ORIGIN_PIPE_GAP - GAP_INCREMENT* int(self.score / 10), 130)
                 print(PIPE_GAP)
